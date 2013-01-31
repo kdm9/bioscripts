@@ -7,12 +7,12 @@ import os.path
 def get_args():
     parser = argparse.ArgumentParser(description="Create a Completly"
             "Randomised Design experimental layout from a CSV file")
-    parser.add_option("-i", "--input", action="store", dest="input")
-    parser.add_option("-o", "--output", action="store", required=True,
+    parser.add_argument("-i", "--input", action="store", dest="input")
+    parser.add_argument("-o", "--output", action="store", required=True,
             dest="output")
-    parser.add_option("-t", "--tray-dimensions", action="store",
+    parser.add_argument("-t", "--tray-dimensions", action="store",
             required=True, dest="tray")
-    parser.add_option("-c", "--create", action="store_true", default=False,
+    parser.add_argument("-c", "--create", action="store_true", default=False,
             dest="create")
 
 
@@ -31,7 +31,7 @@ def main():
 
     if args.create:
         create_csv()
-        exit 0
+        exit()
     
     # Check input file exist
     if not os.path.isfile(args.input):
