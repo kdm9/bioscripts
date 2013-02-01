@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
+from sys import version_info
+if version_info[0] == 3:  # py3k compatibility
+    xrange = range
+
 import csv
 import argparse
 import os.path
@@ -90,7 +96,7 @@ def main():
     condition_count = 0
 
     # For each condition, create tray(s) of it's plants
-    for condition, plants in plant_dict.iteritems():
+    for condition, plants in plant_dict.items():
         condition_count += 1
 
         # Get a list of all the plants for this condition
