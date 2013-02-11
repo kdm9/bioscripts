@@ -32,10 +32,19 @@ def get_options():
         action="store_true",
         default=False)
     parser.add_option(
+        '-c',
+        "--count",
+        dest="count",
+        help="count all restriction sites, equivalent to -m 0 -x infinity",
+        action="store_true",
+        default=False
+        )
+    parser.add_option(
         '-m',
         "--min-length",
         dest="minlen",
         help="minimum length between restriction sites",
+        type=int,
         default=200
         )
     parser.add_option(
@@ -43,7 +52,14 @@ def get_options():
         "--max-length",
         dest="maxlen",
         help="maximum length between restriction sites",
+        type=int,
         default=600
+        )
+    parser.add_option(
+        '-v',
+        "--verbose",
+        dest="verbose",
+        action="count"
         )
     options, args = parser.parse_args()
     die = False
@@ -73,7 +89,8 @@ if opts.listenzymes:
 
 # gets enzyme class by name
 cutter = getattr(Restriction, opts.enzyme)  
-
+print cutter
+print cutter.site
 # Opens file, and creates fasta reader
 seq_file = open(opts.seqfile, "rb")
 seqs = SeqIO.parse(seq_file, "fasta")
@@ -81,7 +98,10 @@ seqs = SeqIO.parse(seq_file, "fasta")
 # Digest all sequences in the fasta file
 count = 0
 for record in seqs:
-    record_count = 0
+    record_count = -1 
+    # When we're counting, we only want to show how many cut sites there
+    # are. Given that cutting a sequence 0 times gives one fragment, we
+    # need to decrement this, or we add one to the true number of sites
 
     # Do virtual digest
     fragments = cutter.catalyse(record.seq)
@@ -93,15 +113,16 @@ for record in seqs:
 
     # Count how many 
     for length in fragment_lengths:
-        if length > opts.minlen and  length < opts.maxlen:
+        if opts.count:
+            record_count += 1
+        elif length > opts.minlen and  length < opts.maxlen:
             record_count += 1
     
     # Append the counts for this record to the total sum
     count += record_count
 
-    # Print summary
-    """Comment this out by adding a pound at the start of the line if it
-    annoys you"""
-    print "%s has %i RADseq tags" % (record.id, record_count)
+    if opts.verbose > 0:
+        # Print summary
+        print "%s has %i RADseq tags" % (record.id, record_count)
 
 print "In total, %i RADseq tags were found" % count
