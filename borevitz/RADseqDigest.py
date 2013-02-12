@@ -98,7 +98,7 @@ seqs = SeqIO.parse(seq_file, "fasta")
 # Digest all sequences in the fasta file
 count = 0
 for record in seqs:
-    record_count = -1 
+    record_count = 0 
     # When we're counting, we only want to show how many cut sites there
     # are. Given that cutting a sequence 0 times gives one fragment, we
     # need to decrement this, or we add one to the true number of sites
@@ -114,7 +114,7 @@ for record in seqs:
     # Count how many 
     for length in fragment_lengths:
         if opts.count:
-            record_count += 1
+            record_count += max(0, len(fragment_lengths) - 1)
         elif length > opts.minlen and  length < opts.maxlen:
             record_count += 1
     
