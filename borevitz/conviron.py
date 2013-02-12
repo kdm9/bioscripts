@@ -226,8 +226,9 @@ def main():
         line = csv_reader.next()
         date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
         last_time = datetime.datetime.fromtimestamp(mktime(strptime(date_time, STRP_FORMAT)))
+    print(last_time)
 
-    # Ensure that the current date
+# Ensure that the current date
     reached_now = False
     for line in csv_reader:
         date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
@@ -235,7 +236,7 @@ def main():
         now = datetime.datetime.now()
         # use a window of 10 minutes to find current time in file
         timedelta = datetime.timedelta(minutes=10)
-        print(time, now)
+        #print(time, now)
         if time < now < time + timedelta:
             reached_now = True
             break
@@ -243,6 +244,12 @@ def main():
             raise ValueError("The file starts too far into the future.")
     if not reached_now:
         raise ValueError("No date in the CSV file matches the current time.")
+    
+    line = csv_reader.next()
+    date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
+    last_time = datetime.datetime.fromtimestamp(mktime(strptime(date_time, STRP_FORMAT)))
+    print(last_time)
+
 
     for line in csv_reader:
         date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
@@ -250,7 +257,9 @@ def main():
         timediff = time - last_time
         last_time = time
         wait_sec = timediff.days * 24 * 60 * 60 + timediff.seconds
-        sleep(wait_sec)
+        print("Waiting %i secs." % wait_sec)
+        sleep(0.0001)
+        #sleep(wait_sec)
         communicate_line(args, line)
 
 if __name__ == "__main__":
