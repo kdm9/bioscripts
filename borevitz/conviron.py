@@ -57,7 +57,7 @@ def get_args():
 
 def communicate_line(args, line):
     print("Communicating:", line)
-    cmd_str = SET_COMMAND + " " + DEVICE_ID + " "
+    cmd_str = SET_COMMAND + " " + DEVICE_ID + " I "
 
 
     # Establish connection
@@ -70,7 +70,7 @@ def communicate_line(args, line):
     payload = bytes(args.user + "\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"Password: ")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
     
@@ -78,132 +78,132 @@ def communicate_line(args, line):
     payload = bytes(args.passwd + "\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
  
     # PCOSET initialisation header
-    payload = bytes(cmd_str + b" 100 26\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 100 26\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
     
-    payload = bytes(cmd_str + b" 101 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 101 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
     
-    payload = bytes(cmd_str + b" 102 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 102 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
    
     # PCOSET send temperature
-    payload = bytes(cmd_str + b" 105 243\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 105 243\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
     # PCOSET send humidity
-    payload = bytes(cmd_str + b" 106 66\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 106 66\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
     # PCOSET send light 1
-    payload = bytes(cmd_str + b" 107 5\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 107 0\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
 
     # PCOSET footer
-    payload = bytes(cmd_str + b" 123 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 123 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
-    payload = bytes(cmd_str + b" 121 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 121 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
     # Wait 3 seconds and clear write flag
     sleep(3)
-    payload = bytes(cmd_str + b" 120 0\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 120 0\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
  
     # Wait 3 seconds and force program reload
     sleep(3)
-    payload = bytes(cmd_str + b" 100 7\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 100 7\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
  
-    payload = bytes(cmd_str + b" 101 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 101 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
-    payload = bytes(cmd_str + b" 102 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 102 1\n", encoding="UTF8")
 
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
 
-    payload = bytes(cmd_str + b" 123 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 123 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
     
-    payload = bytes(cmd_str + b" 121 1\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 121 1\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
  
     # Wait 3 seconds and clear write flag
     sleep(3)
-    payload = bytes(cmd_str + b" 120 0\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 120 0\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
     # Wait 3 seconds, and clear busy flag
     sleep(3)
-    payload = bytes(cmd_str + b" 123 0\n", encoding="UTF8")
+    payload = bytes(cmd_str + " 123 0\n", encoding="UTF8")
     telnet.write(payload)
     response = telnet.read_until(b"#")
-    if args.verbose > 0:
+    if args.verbosity > 0:
         print(payload)
         print(response)
      
@@ -218,12 +218,12 @@ def main():
     csv_reader = csv.reader(csv_fh, delimiter=',',
             quoting=csv.QUOTE_NONE)
     
-    line = csv_reader.next()
+    line = next(csv_reader)
     date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
     try:
         last_time = datetime.datetime.fromtimestamp(mktime(strptime(date_time, STRP_FORMAT)))
     except ValueError:
-        line = csv_reader.next()
+        line = next(csv_reader)
         date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
         last_time = datetime.datetime.fromtimestamp(mktime(strptime(date_time, STRP_FORMAT)))
     print(last_time)
@@ -245,7 +245,7 @@ def main():
     if not reached_now:
         raise ValueError("No date in the CSV file matches the current time.")
     
-    line = csv_reader.next()
+    line = next(csv_reader)
     date_time = line[CSV_FIELDS["Date"]] + " " + line[CSV_FIELDS["Time"]]
     last_time = datetime.datetime.fromtimestamp(mktime(strptime(date_time, STRP_FORMAT)))
     print(last_time)
