@@ -25,7 +25,7 @@ function convLatLon(initial){
   /*initial="37° 46' 14.5\"N"*/
 
   /*avoid "Too many simulaneous scripts for this user" error*/
-  Utilities.sleep(Math.random() * 5000);
+  Utilities.sleep(Math.random() * 10000);
 
   if (initial == "" || initial == null){
     return(null)
