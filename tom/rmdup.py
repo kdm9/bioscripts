@@ -15,6 +15,7 @@ while len(fasta_lst) >= 2:
     needle_rec = fasta_lst.pop()
     print needle_rec[0].split()[0]
     keep = False
+    duplicate_predicted_seqs = []
     for haystack_rec in fasta_lst:
         print "\t%s" % haystack_rec[0].split()[0]
         alns = pairwise2.align.globalxx(needle_rec[1], haystack_rec[1])
@@ -28,15 +29,18 @@ while len(fasta_lst) >= 2:
         best_aln = sort_alns.pop()
         print "\t\tSorted, best aln score is %f" %  best_aln[0]
         if best_aln[0] > MAX_SCORE or best_aln[0] < MIN_SCORE:  # aln[0] is score, see above
-            if haystack_rec[0].find("pred") >= 0:
-                needle_rec = haystack_rec
+            if haystack_rec[0].find("pred") >= 0 and \
+                    needle_rec[0].find("pred") < 0:
+                duplicate_predicted_seqs.append(haystack_rec[0])
+                keep = True
             break
         else:
             keep = True
     if keep:
-        print "Writing seq: %s" % needle_rec[0]
-        output_filehandle.write("%s\n%s\n" % needle_rec)
-        output_filehandle.flush()
+        if needle_rec[0] not in duplicate_predicted_seqs:
+            print "Writing seq: %s" % needle_rec[0]
+            output_filehandle.write("%s\n%s\n" % needle_rec)
+            output_filehandle.flush()
 input_filehandle.close()
 output_filehandle.close()
 
