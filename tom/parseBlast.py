@@ -4,7 +4,8 @@ from Bio.SeqIO.FastaIO import FastaWriter
 from Bio.Entrez import efetch
 from Bio import Entrez
 import re
-Entrez.email = "abc@gmail.com"
+from time import sleep
+Entrez.email = "u4841401@anu.edu.au"
 import sys
 EXPECT = 0.001
 
@@ -21,30 +22,46 @@ for record in blast_parser:
             continue
         else:
             processed_ids[hit_gi] = None
-    if "LOW QUALITY" in aln.hit_def:
+        if "LOW QUALITY" in aln.hit_def:
+            print '\t\t"LOW QUALITY" in seq name'
             continue
         for hsp in aln.hsps:
             if float(hsp.expect) < EXPECT:
                 qlen = len(hsp.query.replace("-",""))
                 coverage = (float(qlen)/ float(record.query_letters))*100.0
                 if coverage > 80.0:
+                    sleep(5)
                     print "\t\tExp: %f start: %i Qend: %i Coverage%%: %f" % (float(hsp.expect), hsp.query_start, hsp.query_end, coverage)
                     ef_handle = efetch(db="protein", id=hit_gi, rettype="fasta", retmode="text")
                     fasta_txt = ef_handle.read()
-                    # edit fasta_txt
+                    while fasta_txt.find("unavailable") >=0:
+                        print "\t\tentrez is failing hard. sleeping. (id:%i)" % hit_gi
+                        sleep(5)
+                        ef_handle = efetch(db="protein", id=hit_gi, rettype="fasta", retmode="text")
+                        fasta_txt = ef_handle.read()
 
-                    fasta_txt = fasta_txt.replace('predicted protein', 'pred.')
-                    fasta_txt = fasta_txt.replace('hypothetical protein', 'pred.')
-                    fasta_txt = fasta_txt.replace('PREDICTED:', 'pred.')
-                    fasta_txt = fasta_txt.replace('probable', '')
-                    fasta_txt = re.sub("glycerol.*?phosphate.*?acyltransferase", "GPAT", fasta_txt, re.I)
-                    fasta_txt = re.sub("\[(\S)\S+", "[\\1", fasta_txt)
-                    fasta_txt = re.sub("\[(\w) (\S{3}).+?\]", "[\\1 \\2]", fasta_txt)
-                    fasta_txt = re.sub(">gi\|(\d+)\|\S+ (.+?)\[(.+?)\]", ">\\2|[\\3]|\\1", fasta_txt)
-                    fasta_txt = re.sub("\s+", " ", fasta_txt)
-                    fasta_txt = fasta_txt.replace(' ','_')
+                    # edit fasta_txt
+                    fasta_lines = fasta_txt.splitlines()
+                    fasta_header = fasta_lines[0]
+                    fasta_seq = "".join(fasta_lines[1:])
+
+                    fasta_header = fasta_header.replace('predicted protein', 'pred.')
+                    fasta_header = fasta_header.replace('hypothetical protein', 'pred.')
+                    fasta_header = fasta_header.replace('PREDICTED:', 'pred.')
+                    fasta_header = fasta_header.replace('probable', '')
+                    fasta_header = re.sub("glycerol.*?phosphate.*?acyltransferase", "GPAT", fasta_header, re.I)
+                    fasta_header = re.sub("\[(\S)\S+", "[\\1", fasta_header)
+                    fasta_header = re.sub("\[(\w) (\S{3}).+?\]", "[\\1 \\2]", fasta_header)
+                    fasta_header = re.sub(">gi\|(\d+)\|\S+ (.+?)\[(.+?)\]", ">\\2|[\\3]|\\1", fasta_header)
+                    fasta_header = re.sub("\s+", " ", fasta_header)
+                    fasta_header = fasta_header.replace(' ','_')
+                    fasta_txt = "%s\n%s\n\n" % (fasta_header, fasta_seq)
                     #print fasta_txt
                     output_filehandle.write(fasta_txt)
                     output_filehandle.flush()
+                else:
+                    print "\t\tPoor coverage"
+            else:
+                print "\t\tExpect value too high"
 input_filehandle.close()
 output_filehandle.close()
