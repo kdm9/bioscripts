@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     for iii in xrange(numtopop):
         posnum, posname = chamber.pop(randrange(len(chamber)))
-        print "%i: %s\t%s" % (iii, posnum, posname)
+        print "%s\t%s" % (posnum, posname)
 
     if len(chamber) > 0:
         try:
