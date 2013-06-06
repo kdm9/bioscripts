@@ -1,13 +1,12 @@
-tem100 = read.csv("/home/kevin/uw/hons/lab/solarcalc/keng/TemoraCurrent100Light-firstday.csv")
-tem50 = read.csv("/home/kevin/uw/hons/lab/solarcalc/keng/TemoraCurrent50Light-firstday.csv")
-umea = read.csv("/home/kevin/uw/hons/lab/solarcalc/keng/UmeaCurrent100Light-firstday.csv")
-zaragoza = read.csv("/home/kevin/uw/hons/lab/solarcalc/keng/ZaragozaCurrent100Light-firstday.csv")
+wol = read.csv("WollongongCurrent100Light-firstday.csv")
+wol35 = read.csv("WollongongCurrent35Light-firstday.csv")
+grif = read.csv("GrifithCurrent100Light-firstday.csv")
+mild = read.csv("ZaragozaCurrent100Light-firstday.csv")
 
 
 png("KengTemps.png")
-####Botrivier Temp and light
 plot(
-	tem100$ChamTemp,
+	wol$ChamTemp,
 	main="Chamber Temp",
 	type="l",
 	ylim=c(0,32),
@@ -15,19 +14,19 @@ plot(
 	ylab="Deg C"
 )
 lines(
-	tem50$ChamTemp,
+	wol35$ChamTemp,
 	type="l",
 	ylim=c(0,32),
 	col="green"
 )
 lines(
-	umea$ChamTemp,
+	grif$ChamTemp,
 	type="l",
 	ylim=c(0,32),
 	col="red"
 )
 lines(
-	zaragoza$ChamTemp,
+	mild$ChamTemp,
 	type="l",
 	ylim=c(0,32),
 	col="blue"
@@ -35,14 +34,49 @@ lines(
 legend(
        "bottomright",
        lty=1,
-       legend=c("Tempora 100%", "Temora 50%", "Umea 100%", "Zaragoza 100%"),
+       legend=c("Wollongong 100%", "Wollongong 35%", "Griffith 100%", "Mildura 100%"),
+       col=c("black", "green", "red", "blue")
+)
+dev.off()
+
+png("KengRHs.png")
+plot(
+	wol$ChamRH,
+	main="Chamber RH",
+	type="l",
+	ylim=c(0,100),
+	xlab="Time",
+	ylab="Deg C"
+)
+lines(
+	wol35$ChamRH,
+	type="l",
+	ylim=c(0,100),
+	col="green"
+)
+lines(
+	grif$ChamRH,
+	type="l",
+	ylim=c(0,100),
+	col="red"
+)
+lines(
+	mild$ChamRH,
+	type="l",
+	ylim=c(0,100),
+	col="blue"
+)
+legend(
+       "bottomright",
+       lty=1,
+       legend=c("Wollongong 100%", "Wollongong 35%", "Griffith 100%", "Mildura 100%"),
        col=c("black", "green", "red", "blue")
 )
 dev.off()
 
 png("KengLight.png")
 plot(
-	rowSums(tem100[,5:11]),
+	rowSums(wol[,5:11]),
 	main="LED Intensity",
 	type="l",
 	ylim=c(0,2000),
@@ -50,19 +84,19 @@ plot(
 	ylab="Sum of LED intensity"
 )
 lines(
-	rowSums(tem50[,5:11]),
+	rowSums(wol35[,5:11]),
 	type="l",
 	ylim=c(0,2000),
 	col="green"
 )
 lines(
-	rowSums(umea[,5:11]),
+	rowSums(grif[,5:11]),
 	type="l",
 	ylim=c(0,2000),
 	col="red"
 )
 lines(
-	rowSums(zaragoza[,5:11]),
+	rowSums(mild[,5:11]),
 	type="l",
 	ylim=c(0,2000),
 	col="blue"
@@ -70,7 +104,12 @@ lines(
 legend(
        "topleft",
        lty=1,
-       legend=c("Tempora 100%", "Temora 50%", "Umea 100%", "Zaragoza 100%"),
+       legend=c("Wollongong 100%", "Wollongong 35%", "Griffith 100%", "Mildura 100%"),
        col=c("black", "green", "red", "blue")
 )
+dev.off()
+
+ratio <- rowSums(wol[,5:11])/rowSums(wol35[,5:11])
+png("KengHL.LL_ratio.png")
+plot(ratio,type="l",ylim=c(0,4))
 dev.off()
