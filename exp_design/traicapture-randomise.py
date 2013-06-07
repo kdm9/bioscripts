@@ -1,3 +1,4 @@
+from __future__ import print_function
 from random import randrange
 from json import load, dump
 from docopt import docopt
@@ -14,19 +15,20 @@ OPTIONS:
     -c <chambersize>	Number of pots in the chamber
     -j <jsonfile>		Json file containing remaining pots.
     -n <numpots>		Allocate this number of pots
-    -t <traytype>       One of: none, 5x4
+    -t <traytype>       One of: none, 5x4 (old way), 4x5 (trayscan/new way)
     -x <skippos>        Comma separated list of tray positions to skip
 """
 
 TRAYS = {
-        "5x4": {
-            1: 'A1', 2: 'A2', 3: 'A3', 4: 'A4', 5: 'B1', 6: 'B2', 7: 'B3',
-            8: 'B4', 9: 'C1', 10: 'C2', 11: 'C3', 12: 'C4', 13: 'D1', 14: 'D2',
-            15: 'D3', 16: 'D4', 17: 'E1', 18: 'E2', 19: 'E3', 20: 'E4'
-            },
-        "none": {
-            1: ""
-            }
+        "5x4": [
+            'A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4',
+            'D1', 'D2', 'D3', 'D4', 'E1', 'E2', 'E3', 'E4',
+            ],
+        "4x5": [
+            'A1', 'A2', 'A3', 'A4', 'A5', 'B1', 'B2', 'B3', 'B4', 'B5', 'C1', 'C2',
+            'C3', 'C4', 'C5', 'D1', 'D2', 'D3', 'D4', 'D5',
+            ],
+        "none": ["",]
         }
 
 def make_chamber(tray_type, chamber_size,skip):
@@ -44,7 +46,7 @@ def make_chamber(tray_type, chamber_size,skip):
             tray_idx = tray_size
         if tray_idx in skip:
             continue
-        traypos = str(iii//20+1) + TRAYS[tray_type][tray_idx]
+        traypos = str(iii//tray_size+1) + TRAYS[tray_type][iii%tray_size]
         chamber.append((iii + 1, traypos))
     return chamber
 
@@ -53,7 +55,7 @@ if __name__ == "__main__":
 
     chamber_size = int(opts["-c"])
     numtopop = int(opts["-n"])
-    skip = opts["-x"].split(",")
+    skip = [int(x) for x in opts["-x"].split(",")]
     json_file = opts["-j"]
     tray_type = opts["-t"]
 
@@ -74,7 +76,7 @@ if __name__ == "__main__":
 
     for iii in xrange(numtopop):
         posnum, posname = chamber.pop(randrange(len(chamber)))
-        print "%s\t%s" % (posnum, posname)
+        print("%s\t%s" % (posnum, posname))
 
     if len(chamber) > 0:
         try:
@@ -85,4 +87,7 @@ if __name__ == "__main__":
         dump({"remaining": chamber}, j_fh)
         j_fh.close()
     else:
-        os.remove(json_file)
+        try:
+            os.remove(json_file)
+        except OSError:
+            pass
