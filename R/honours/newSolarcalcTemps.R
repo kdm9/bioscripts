@@ -15,6 +15,8 @@ day.means <- rep(tapply(inland$ChamTemp,day.index,function (x) mean(x) ),each = 
 
 inland$ChamTemp <- day.means + ((inland$ChamTemp - day.means) * temp.multi)
 
+write.csv(inland,file="WolInland.csv",row.names=FALSE,quote=FALSE)
+
 png("WolInland.png")
 plot(wol$ChamTemp[1:(10*1440)],type="l",ylim=c(0,30))
 lines(inland$ChamTemp[1:(10*1440)],type="l",col="red",ylim=c(0,30))
