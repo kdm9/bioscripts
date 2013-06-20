@@ -63,3 +63,27 @@ function convLatLon(initial){
   }
 
 }
+
+function chamPosFromTrayPosNew(trayPos) {
+  var splitRegex = /^(\d+)([ABCD])(\d+)$/;
+  var split = splitRegex.exec(trayPos);
+  [_, tray, col, row] = split;
+  var pos = 0;
+  pos += (parseInt(tray) - 1) * 20; /* count full trays */
+  var colNum = col.charCodeAt(0) - 64;
+  pos += ( colNum - 1) * 5; /* count full columns */
+  pos += parseInt(row);
+  return pos;
+}
+
+function chamPosFromTrayPosOld(trayPos) {
+  var splitRegex = /^(\d+)([ABCDE])(\d+)$/;
+  var split = splitRegex.exec(trayPos);
+  [_, tray, row, col] = split;
+  var pos = 0;
+  pos += (parseInt(tray) - 1) * 20; /* count full trays */
+  var rowNum = row.charCodeAt(0) - 64;
+  pos += ( rowNum - 1) * 4; /* count full columns */
+  pos += parseInt(col);
+  return pos;
+}
