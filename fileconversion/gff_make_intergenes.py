@@ -32,6 +32,8 @@ def main():
         last_stop = 0
         last_id = chrom + "_START"
         genes = list(fdb.features_of_type("gene", chrom=chrom))
+        genes.extend(list(fdb.features_of_type("transposable_element",
+                chrom=chrom)))
         genes.extend(list(fdb.features_of_type("transposable_element_gene",
                 chrom=chrom)))
         genes = sorted(genes, key=lambda g: g.start)
