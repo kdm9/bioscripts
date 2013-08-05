@@ -17,7 +17,6 @@ Options
 
 def main():
     opts = docopt(__doc__)
-    print(opts)
     infn = opts["<input>"]
     outfn = opts["<output>"]
 
@@ -32,10 +31,8 @@ def main():
 
     output_samples = []
     for sample in samples:
-        print(sample.keys())
         sample = {k.strip(): v.strip() for k, v in sample.iteritems()}
         out_sample = {k: sample[k] for k in keys_to_keep}
-        print(out_sample)
         output_samples.append(out_sample)
 
     with open(outfn, "w") as outfh:
