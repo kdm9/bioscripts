@@ -22,10 +22,9 @@ def _make_db_dict(filename):
     reader = DictReader(ifh)
     db_dict = {}
     for record in reader:
-        db_dict[record["ID"]] = record
+        db_dict[str(record["ID"])] = record
     ifh.close()
     return db_dict
-
 
 def main():
     opts = docopt(__doc__)
@@ -46,10 +45,10 @@ def main():
         try:
             # wait for plant scan
             print("Scan plant barcode")
-            plant_id = raw_input("Pot >")
+            plant_id = raw_input("Pot >").strip()
 
             try:
-                plant = plant_dict["plant_id"]
+                plant = plant_dict[plant_id]
             except KeyError:
                 print("ERROR: plant id '%s' not in database" % plant_id)
                 continue
@@ -59,9 +58,10 @@ def main():
                     plant["TrayPosition"])
                     )
 
+
             print("Scan sample barcode")
-            # wait for tube scan
-            sample_id = raw_input("Pot >") 
+            sample_id = raw_input("Tube >").strip()
+
             try:
                 sample = sample_dict[sample_id]
             except KeyError:
@@ -80,9 +80,10 @@ def main():
                 "PlantID": plant_id,
                 "CollectionTime": dt.strftime(dt.now(), "%y-%m-%dT%H:%M:%S")
                 })
-        except KeyboardInterrupt:
-            exit = True
+        except (KeyboardInterrupt, EOFError):
+            print()
             ofh.close()
+            exit = True
 
 if __name__ == "__main__":
     main()
