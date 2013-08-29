@@ -49,7 +49,10 @@ def main():
 
     for sample_type in sample_types:
         out_files[sample_type] = deepcopy(file_d)
-        fn = os.path.join(opts["-o"], "%s.csv" % sample_type)
+        fn = os.path.join(opts["-o"], "%s_%s.csv" % (
+                sample_type,
+                dt.strftime(dt.now(), "%y-%m-%dT%H:%M:%S")
+                ))
         out_files[sample_type]["name"] = fn
         out_files[sample_type]["fh"] = open(fn, "w")
         out_files[sample_type]["writer"] = DictWriter(
