@@ -33,9 +33,6 @@ def main():
 
     plant_dict = _make_db_dict(opts["-d"])
     print("Read Plant DB: Found %i plants" % len(plant_dict))
-    from json import dumps
-    print(dumps(plant_dict, indent=2))
-
 
     sample_types = opts["-s"].strip().split(",")
     if len(sample_types) < 1:
