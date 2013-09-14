@@ -104,7 +104,7 @@ def main():
             if not "n" in raw_input().lower():
                 for sample_type in sample_types:
                     out_files[sample_type]["writer"].writerow(write_d[sample_type])
-
+                    out_files[sample_type]["fh"].flush()
 
         except (KeyboardInterrupt, EOFError):
             exit = True
