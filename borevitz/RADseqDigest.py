@@ -25,7 +25,7 @@ def get_options():
             '-e',
             '--enzyme',
             dest='enzyme',
-            help='Enzyme',
+            help='Enzymes. Use a comma seperated list e.g. MspI,HpaII',
             default="EcoRI"
             )
     parser.add_option(
@@ -93,9 +93,13 @@ if opts.listenzymes:
     sys.exit(0)
 
 # gets enzyme class by name
-cutter = getattr(Restriction, opts.enzyme)
-print cutter
-print cutter.site
+cutters = opts.enzyme.split(",")
+cutters = [getattr(Restriction, enz) for enz in cutters]
+print("Using the following exzymes:")
+for cutter in cutters:
+    print("\t{}".format(cutter))
+    print("\t{}".format(cutter.site))
+
 # Opens file, and creates fasta reader
 seq_file = open(opts.seqfile, "rb")
 seqs = SeqIO.parse(seq_file, "fasta")
@@ -109,6 +113,7 @@ for record in seqs:
     # need to decrement this, or we add one to the true number of sites
 
     # Do virtual digest
+    # TODO: change this to use `cutters` and RestrictionBatch
     fragments = cutter.catalyse(record.seq)
 
     # Find fragment lenghts
