@@ -26,11 +26,11 @@ JELLYFISH=jellyfish
 KAT=~norman/applications/KAT/src/kat
 
 #loop through sample files within a plate (Plate hardcoded above)
-cat - | parallel \
-       	export KatOUTFILE=kat_${plate}_{}_vs_ref_kmer_${KMERSIZE} \; \
-       	export JellyOUTFILE=jelly_${plate}_{}_${KMERSIZE} \; \
-	export sample_FWD=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-1-clipped_filtered.sorted.fq \; \
-	export sample_REV=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-2-clipped_filtered.sorted.fq \; \
-	export sample_SINGLES=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-singles-clipped_filtered.fq \; \
-	$JELLYFISH count -m$KMERSIZE -C -s 1000000000 -o \$JellyOUTFILE \<\(cat  \$sample_FWD \$sample_REV \$sample_SINGLES \| seqtk sample - $N_reads\) \; \
+cat - | parallel --jobs -1 \
+       	KatOUTFILE=kat_${plate}_{}_vs_${jellyREF}_kmer_${KMERSIZE} \; \
+       	JellyOUTFILE=jelly_${plate}_{}_${KMERSIZE} \; \
 	$KAT comp -o \$KatOUTFILE $jellyREF \$\{JellyOUTFILE\}_0
+#	sample_FWD=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-1-clipped_filtered.sorted.fq \; \
+#	sample_REV=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-2-clipped_filtered.sorted.fq \; \
+#	sample_SINGLES=~/Analysis/Brachypodium/exports/${plate}_export_good_clip/sample_{}-singles-clipped_filtered.fq \; \
+#	if \[ \! -f \$JellyOUTFILE \] \; then $JELLYFISH count -m$KMERSIZE -C -s 1000000000 -o \$JellyOUTFILE \<\(cat  \$sample_FWD \$sample_REV \$sample_SINGLES \| seqtk sample - $N_reads\) \; fi\; \
