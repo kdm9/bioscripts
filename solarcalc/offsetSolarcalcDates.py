@@ -5,13 +5,13 @@ from datetime import datetime, timedelta
 
 __doc__ = """
 USAGE:
-    script.py -d DAYS -i INFILE -o OUTFILE
+    script.py [ -i INFILE -o OUTFILE ] -d DAYS
 
 OPTIONS:
     -d DAYS     Integral number of days to offset file by. Negative for
                     backwards in time, positive for forwards in time.
-    -i INFILE   Input solarcalc CSV file
-    -o OUTFILE  Output solarcalc CSV file
+    -i INFILE   Input solarcalc CSV file. [stdin]
+    -o OUTFILE  Output solarcalc CSV file. [stdout]
 """
 
 
@@ -26,8 +26,14 @@ def main():
     except ValueError:
         sys.stderr.write("ERROR: value for -d must be a non-zero number\n")
 
-    in_fh = open(opts["-i"])
-    out_fh = open(opts["-o"], "w")
+    if "-i" in opts and opts["-i"]:
+        in_fh = open(opts["-i"])
+    else:
+        in_fh = sys.stdin
+    if "-o" in opts and opts["-o"]:
+        out_fh = open(opts["-o"], "w")
+    else:
+        out_fh = sys.stdout
 
     csv_keys = [
             "Date", "Time", "ChamTemp", "ChamRH", "LED1", "LED2", "LED3", 
