@@ -23,6 +23,9 @@ def get_args():
     parser.add_argument("-t", "--tray-dimensions", action="store",
             required=True, dest="tray", help="The dimensions of the tray,"
             " given as <rows>x<cols> (note that's a lower case letter x)")
+    parser.add_argument("-R", "--replicates-together", action="store_true",
+            default=False, dest="reps_together", help="Should all plants in a"
+            " replicate block be grouped together?")
     parser.add_argument("-r", "--replicates", action="store", default=1,
             required=True, dest="reps", type=int, help="The number of"
             " replicates per plant and condition")
@@ -101,10 +104,13 @@ def main():
 
         # Get a list of all the plants for this condition
         if args.reps > 1:
-            these_plants = []
-            for rrr in xrange(args.reps):
-                for plant in plants:
-                    these_plants.append("%s R%i" % (plant, rrr + 1))
+            if args.reps_together:
+                pass
+            else:
+                these_plants = []
+                for rrr in xrange(args.reps):
+                    for plant in plants:
+                        these_plants.append("%s R%i" % (plant, rrr + 1))
         else:
             these_plants = plants
 
@@ -123,7 +129,7 @@ def main():
             plant_count += 1
 
             # Create new tray if the current one is full
-            if plant_count > tray_size:
+            if plant_count >= tray_size:
                 # Must deepcopy, see above
                 this_tray_pos = deepcopy(tray_pos)
                 tray_count += 1
