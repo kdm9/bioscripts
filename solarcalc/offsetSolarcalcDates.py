@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 
 __doc__ = """
 USAGE:
-    script.py [ -i INFILE -o OUTFILE -f FMT] -d DAYS
+    script.py [ -i INFILE -o OUTFILE -f FMT ] (-O DAYS | -d DATE)
 
 OPTIONS:
-    -d DAYS     Integral number of days to offset file by. Negative for
+    -d DATE     Make start date this date. Must be in format %Y-%m-%d.
+    -O DAYS     Integral number of days to offset file by. Negative for
                     backwards in time, positive for forwards in time.
     -f FMT      Date format. [Default: %m/%d/%Y]
     -i INFILE   Input solarcalc CSV file. [stdin]
