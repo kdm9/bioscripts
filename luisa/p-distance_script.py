@@ -1,3 +1,18 @@
+# Copyright 2015 Luisa Teasdale
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ####################
 # p-distance calculator
 # lteasnail 20150505
@@ -9,56 +24,54 @@
 # sequence. The sequences need to be aligned and the alignments need to be of the
 # same length.
 ##
-# Run as follows: python p-distance_script.py file.fasta header_seq1 header_seq2 > output.txt
-# e.g. python p-distance_script.py 52083_aa_23_[2]_sc_trim.fas 02~~comp11592_c0_seq1~~1E-162~~1 25~~comp75444_c0_seq1~~1E-159~~1
+# Run as follows:
+# python p-distance_script.py name1 name2 file.fa file2.fa > output.txt
 ####################
 
-#the fasta parser
+# the fasta parser
 import screed
-#for taking arguments from the command line
-import sys
 
+def process_file(file, seq_1_name, seq_2_name):
+    """Calculates the P distance between the two sequences in a file"""
+    # Find the two selected sequences and convert them to seperated lists
+    for seq in screed.open(file):
+        if seq.name == seq_1_name:
+            seq_1 = seq.sequence
+            length = len(seq.sequence)
+        elif seq.name == seq_2_name:
+            seq_2 = seq.sequence
 
-file = sys.argv[1]
-seq_1_name = sys.argv[2]
-seq_2_name = sys.argv[3]
+    if len(seq2) != length:
+        print "ERROR: The two sequence lengths differ"
+        exit(1)
 
-# Find the two selected sequences and 
-# convert them to seperated lists 
-for seq in screed.open(file):
-    if seq.name == seq_1_name:
-        seq_1 = seq.sequence
-        seq_1_split = list(seq_1)
-        length = len(seq.sequence)
-    elif seq.name == seq_2_name:
-        seq_2 = seq.sequence
-        seq_2_split = list(seq_2)
+    # Count the number of bases with missing data and the number where the two
+    # sequences differ
+    num_missing = 0
+    num_diff = 0
+
+    for base in range(length):
+        if seq_1[base] == '-' or seq_2[base] == '-':
+            num_missing += 1
+        elif seq_1[base] != seq[base]:
+            num_diff += 1
+
+    # Calulate and print the p-distance
+    num_diff = float(num_diff)
+
+    if num_diff == 0:
+        print '%s\t0\t0\t0' % file
     else:
-        continue
+        part = length - num_missing
+        pdistance = num_diff / part
+        print '%s\t%r\t%d\t%d' % (file, pdistance, num_diff, part)
 
-        
-# Count the number of bases with missing data and 
-# the number where the two sequences differ
-num_missing = 0
-num_diff = 0
+if __name__ == "__main__":
+    # for taking arguments from the command line
+    import sys
 
-for base in range(len(seq_1_split)):
-    if seq_1_split[base] == '-' or seq_2_split[base] == '-':
-        num_missing = num_missing + 1
-        continue 
-    elif seq_1_split[base] != seq_2_split[base]:
-        num_diff = num_diff + 1
-    else:
-        continue
+    seq_1_name = sys.argv[1]
+    seq_2_name = sys.argv[2]
 
-# Calulate and print the p-distance
-num_diff = float(num_diff)
-
-if num_diff == 0:
-    print 'no differences'
-else:
-    pdistance = num_diff / (length - num_missing)
-    part = length - num_missing
-    pd = num_diff / part
-    print '%s\t%r\t%d\t%d' % (file, pd, num_diff, part)
-    
+    for file in sys.argv[3:]:
+        process_file(file, seq_1_name, seq_2_name)
