@@ -42,7 +42,7 @@ def process_file(file, seq_1_name, seq_2_name):
             length = len(seq.sequence)
         elif seq.name == seq_2_name:
             seq_2 = seq.sequence
-        if seq_1 and seq_2:
+        if seq_1 is not None and seq_2 is not None:
             break
 
     if len(seq2) != length:
