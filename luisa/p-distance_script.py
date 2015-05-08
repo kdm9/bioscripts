@@ -52,7 +52,6 @@ def process_file(file, seq_1_name, seq_2_name):
         exit(1)
 
     length = len(seq_1)
-
     if len(seq2) != length:
         print "ERROR: The two sequence lengths differ"
         exit(1)
@@ -61,7 +60,6 @@ def process_file(file, seq_1_name, seq_2_name):
     # sequences differ
     num_missing = 0
     num_diff = 0
-
     for base in range(length):
         if seq_1[base] == '-' or seq_2[base] == '-':
             num_missing += 1
@@ -70,7 +68,6 @@ def process_file(file, seq_1_name, seq_2_name):
 
     # Calulate and print the p-distance
     num_diff = float(num_diff)
-
     if num_diff == 0:
         print '%s\t0\t0\t0' % file
     else:
