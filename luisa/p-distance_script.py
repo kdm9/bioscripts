@@ -34,12 +34,16 @@ import screed
 def process_file(file, seq_1_name, seq_2_name):
     """Calculates the P distance between the two sequences in a file"""
     # Find the two selected sequences and convert them to seperated lists
+    seq_1 = None
+    seq_2 = None
     for seq in screed.open(file):
         if seq.name == seq_1_name:
             seq_1 = seq.sequence
             length = len(seq.sequence)
         elif seq.name == seq_2_name:
             seq_2 = seq.sequence
+        if seq_1 and seq_2:
+            break
 
     if len(seq2) != length:
         print "ERROR: The two sequence lengths differ"
