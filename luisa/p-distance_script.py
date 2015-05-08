@@ -67,13 +67,12 @@ def process_file(file, seq_1_name, seq_2_name):
             num_diff += 1
 
     # Calulate and print the p-distance
-    num_diff = float(num_diff)
     if num_diff == 0:
         print '%s\t0\t0\t0' % file
     else:
-        part = length - num_missing
-        pdistance = num_diff / part
-        print '%s\t%r\t%d\t%d' % (file, pdistance, num_diff, part)
+        len_nogaps = length - num_missing
+        pdistance = float(num_diff) / len_nogaps
+        print '%s\t%r\t%d\t%d' % (file, pdistance, num_diff, len_nogaps)
 
 if __name__ == "__main__":
     # for taking arguments from the command line
