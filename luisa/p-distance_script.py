@@ -39,11 +39,19 @@ def process_file(file, seq_1_name, seq_2_name):
     for seq in screed.open(file):
         if seq.name == seq_1_name:
             seq_1 = seq.sequence
-            length = len(seq.sequence)
         elif seq.name == seq_2_name:
             seq_2 = seq.sequence
         if seq_1 is not None and seq_2 is not None:
             break
+
+    if seq_1 is None:
+        print "ERROR: Couldn't find seq 1, check your spelling"
+        exit(1)
+    if seq_2 is None:
+        print "ERROR: Couldn't find seq 2, check your spelling"
+        exit(1)
+
+    length = len(seq_1)
 
     if len(seq2) != length:
         print "ERROR: The two sequence lengths differ"
