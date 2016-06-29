@@ -69,26 +69,27 @@ def dump_sra(srafile, dumpcmd, outstream):
             outstream.write(buf)
 
 
-def process_sample(samplefile, srafiles, dumpcmd, postcmd=None):
+def process_sample(samplefile, srafiles, dumpcmd, postcmd=None, quiet=False):
     out_fh = gzip.open(samplefile, 'wb', compresslevel=6)
     try:
         for srafile in srafiles:
             dump_sra(srafile, dumpcmd, out_fh)
     finally:
         out_fh.close()
+    if not quiet:
+        print("Processed", samplefile, file=stderr)
 
 
 def main():
     args = argparser().parse_args()
-    print(args)
 
     sample_map = json.load(args.samplemap)
 
     arg_lists = []
-    for sample, runs in sample_map:
+    for sample, runs in sample_map.items():
         samplefile = args.outfile.format(sample)
         runfiles = [args.infile.format(run) for run in runs]
-        arg_lists.append(samplefile, runfiles, args.dumpcmd)
+        arg_lists.append((samplefile, runfiles, args.dumpcmd))
 
     pool = mp.Pool(args.jobs)
     pool.starmap(process_sample, arg_lists)
