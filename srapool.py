@@ -42,9 +42,9 @@ def argparser():
     parser.add_argument(
         '-d', '--dumpcmd', required=False, default='fastq-dump --stdout {}',
         help='Shell pipeline to run on input SRA files')
-    # parser.add_argument(
-    #     '-c', '--postcmd', required=False,
-    #     help='Shell pipeline to run on output files before saving to disk')
+    parser.add_argument(
+        '-c', '--postcmd', required=False, default='gzip',
+        help='Shell pipeline to run on output files before saving to disk')
     parser.add_argument(
         '-i', '--infile', required=False, default='./{}.sra',
         help='File path format string for input file. use {} to mark SRA id.')
@@ -70,12 +70,21 @@ def dump_sra(srafile, dumpcmd, outstream):
 
 
 def process_sample(samplefile, srafiles, dumpcmd, postcmd=None, quiet=False):
-    out_fh = gzip.open(samplefile, 'wb', compresslevel=6)
+    out_fh = open(samplefile, 'wb')
+    post_fh = out_fh
+    post_proc = None
+    if postcmd is not None:
+        post_proc = Popen(dumpcmd, shell=True, executable='/bin/bash',
+                          stdin=PIPE, stdout=out_fh, stderr=None,
+                          universal_newlines=False)
+        post_fh = post_proc.stdin
     try:
         for srafile in srafiles:
-            dump_sra(srafile, dumpcmd, out_fh)
+            dump_sra(srafile, dumpcmd, post_fh)
     finally:
         out_fh.close()
+        post_fh.close()
+        post_proc.join()
     if not quiet:
         print("Processed", samplefile, file=stderr)
 
@@ -91,10 +100,14 @@ def main():
         runfiles = [args.infile.format(run) for run in runs]
         arg_lists.append((samplefile, runfiles, args.dumpcmd))
 
-    pool = mp.Pool(args.jobs)
-    pool.starmap(process_sample, arg_lists)
-    pool.close()
-    pool.join()
+    if args.jobs > 1:
+        pool = mp.Pool(args.jobs)
+        pool.starmap(process_sample, arg_lists)
+        pool.close()
+        pool.join()
+    else:
+        for proc_args in arg_lists:
+            process_sample(*proc_args)
 
 
 if __name__ == '__main__':
