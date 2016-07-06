@@ -33,7 +33,7 @@ def argparser():
         '-d', '--dumpcmd', required=False, default='fastq-dump --stdout {}',
         help='Shell pipeline to run on input SRA files')
     parser.add_argument(
-        '-o', '--out', required=False, type=FileType('wb'), default=stdout,
+        '-o', '--out', required=False, type=FileType('wb'), default=stdout.buffer,
         help='File path format string for output file. use {} to mark sample id.')
     parser.add_argument(
         '-j', '--jobs', required=False, default=1, type=int,
