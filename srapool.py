@@ -20,17 +20,8 @@ from argparse import (
     ArgumentParser,
     FileType,
 )
-from glob import glob
-import gzip
-import itertools as itl
-import json
-import multiprocessing as mp
-import os
-from os import path, mkdir
-import re
 from sys import stderr, stdout
 from subprocess import DEVNULL, PIPE, Popen
-from textwrap import dedent
 
 CHUNK = 2**26
 
