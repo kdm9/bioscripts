@@ -37,24 +37,18 @@ CHUNK = 2**26
 
 def argparser():
     desc = "Pools SRA runs into a single fastq per sample"
-    el = "Sample map is a JSON file mapping sample name to list of SRA files"
-    parser = ArgumentParser(description=desc, epilog=el)
+    parser = ArgumentParser(description=desc)
     parser.add_argument(
         '-d', '--dumpcmd', required=False, default='fastq-dump --stdout {}',
         help='Shell pipeline to run on input SRA files')
     parser.add_argument(
-        '-c', '--postcmd', required=False, default='gzip',
-        help='Shell pipeline to run on output files before saving to disk')
-    parser.add_argument(
-        '-i', '--infile', required=False, default='./{}.sra',
-        help='File path format string for input file. use {} to mark SRA id.')
-    parser.add_argument(
-        '-o', '--outfile', required=False, default='./{}.fastq.gz',
+        '-o', '--out', required=False, type=FileType('wb'), default=stdout,
         help='File path format string for output file. use {} to mark sample id.')
     parser.add_argument(
         '-j', '--jobs', required=False, default=1, type=int,
         help='Number of parallel dumping jobs')
-    parser.add_argument('samplemap', help='Read files', type=FileType('r'))
+    parser.add_argument('input_files', help='SRA Read files', type=str,
+                        nargs="+")
     return parser
 
 
@@ -69,45 +63,12 @@ def dump_sra(srafile, dumpcmd, outstream):
             outstream.write(buf)
 
 
-def process_sample(samplefile, srafiles, dumpcmd, postcmd=None, quiet=False):
-    out_fh = open(samplefile, 'wb')
-    post_fh = out_fh
-    post_proc = None
-    if postcmd is not None:
-        post_proc = Popen(dumpcmd, shell=True, executable='/bin/bash',
-                          stdin=PIPE, stdout=out_fh, stderr=None,
-                          universal_newlines=False)
-        post_fh = post_proc.stdin
-    try:
-        for srafile in srafiles:
-            dump_sra(srafile, dumpcmd, post_fh)
-    finally:
-        out_fh.close()
-        post_fh.close()
-        post_proc.join()
-    if not quiet:
-        print("Processed", samplefile, file=stderr)
-
-
 def main():
     args = argparser().parse_args()
 
-    sample_map = json.load(args.samplemap)
-
-    arg_lists = []
-    for sample, runs in sample_map.items():
-        samplefile = args.outfile.format(sample)
-        runfiles = [args.infile.format(run) for run in runs]
-        arg_lists.append((samplefile, runfiles, args.dumpcmd))
-
-    if args.jobs > 1:
-        pool = mp.Pool(args.jobs)
-        pool.starmap(process_sample, arg_lists)
-        pool.close()
-        pool.join()
-    else:
-        for proc_args in arg_lists:
-            process_sample(*proc_args)
+    for run in args.input_files:
+        dump_sra(run, args.dumpcmd, args.out)
+        print("Processed", run, file=stderr)
 
 
 if __name__ == '__main__':
